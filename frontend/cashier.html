@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kasir POS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Transaksi Kasir</h1>
+
+  <!-- Form transaksi -->
+  <section>
+    <h2>Tambah Transaksi</h2>
+    <form id="transactionForm">
+      <label for="itemId">ID Barang:</label>
+      <input type="number" id="itemId" required>
+
+      <label for="qty">Jumlah:</label>
+      <input type="number" id="qty" required>
+
+      <button type="submit">Tambah ke Keranjang</button>
+    </form>
+  </section>
+
+  <!-- Keranjang -->
+  <section>
+    <h2>Keranjang</h2>
+    <table border="1" id="cartTable">
+      <thead>
+        <tr>
+          <th>ID Barang</th>
+          <th>Nama Barang</th>
+          <th>Jumlah</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data keranjang -->
+      </tbody>
+    </table>
+    <p><strong>Total:</strong> <span id="totalAmount">0</span></p>
+    <button id="checkoutBtn">Checkout</button>
+  </section>
+
+<script>
+  let cart = [];
+
+  async function getItem(id) {
+    const res = await fetch('/api/inventory');
+    const items = await res.json();
+    return items.find(item => item.id == id);
+  }
+
+  function renderCart() {
+    const tbody = document.querySelector('#cartTable tbody');
+    tbody.innerHTML = '';
+    let total = 0;
+    cart.forEach(c => {
+      const subtotal = c.qty * c.price;
+      total += subtotal;
+      tbody.innerHTML += `<tr>
+        <td>${c.id}</td>
+        <td>${c.name}</td>
+        <td>${c.qty}</td>
+        <td>${subtotal}</td>
+      </tr>`;
+    });
+    document.getElementById('totalAmount').textContent = total;
+  }
+
+  document.getElementById('transactionForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const id = document.getElementById('itemId').value;
+    const qty = parseInt(document.getElementById('qty').value);
+    const item = await getItem(id);
+    if (!item) {
+      alert('Barang tidak ditemukan');
+      return;
+    }
+    cart.push({ id: item.id, name: item.name, qty, price: item.price });
+    renderCart();
+  });
+
+  document.getElementById('checkoutBtn').addEventListener('click', async () => {
+    const res = await fetch('/api/transactions/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cart })
+    });
+    const result = await res.json();
+    alert(result.message || 'Transaksi berhasil');
+    cart = [];
+    renderCart();
+  });
+</script>
+  
+</body>
+</html>

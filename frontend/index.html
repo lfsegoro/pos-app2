@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>POS App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Point of Sale</h1>
+
+  <!-- Container utama -->
+  <div id="app">
+    <!-- View untuk harga -->
+    <div id="priceView" class="view">
+      <h2>Harga</h2>
+      <input type="number" id="priceInput" placeholder="Masukkan harga">
+    </div>
+
+    <!-- View untuk qty -->
+    <div id="qtyView" class="view" style="display:none;">
+      <h2>Quantity</h2>
+      <input type="number" id="qtyInput" placeholder="Masukkan jumlah">
+    </div>
+
+    <!-- View untuk keypad -->
+    <div id="keypadView" class="view" style="display:none;">
+      <h2>Keypad</h2>
+      <div id="keypad">
+        <!-- Tombol keypad bisa di-generate lewat JS -->
+      </div>
+    </div>
+
+    <!-- Ringkasan transaksi -->
+    <div id="summaryView" class="view" style="display:none;">
+      <h2>Ringkasan</h2>
+      <p id="summaryText">Belum ada transaksi</p>
+      <button id="saveBtn">Simpan Transaksi</button>
+    </div>
+  </div>
+
+  <!-- Load frontend scripts -->
+  <script src="state.js"></script>
+  <script src="reducer.js"></script>
+  <script src="fsm.js"></script>
+  <script src="domViews.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+

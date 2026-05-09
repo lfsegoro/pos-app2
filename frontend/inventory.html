@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventory Management</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Inventory Management</h1>
+
+  <!-- Form tambah barang baru -->
+  <section>
+    <h2>Tambah Barang Baru</h2>
+    <form id="addItemForm">
+      <input type="text" id="itemName" placeholder="Nama barang" required>
+      <input type="number" id="itemStock" placeholder="Stok awal" value="0">
+      <input type="number" id="itemPrice" placeholder="Harga" value="0" step="0.01">
+      <button type="submit">Tambah</button>
+    </form>
+  </section>
+
+  <!-- Form barang masuk -->
+  <section>
+    <h2>Barang Masuk</h2>
+    <form id="stockInForm">
+      <input type="number" id="stockInId" placeholder="ID barang" required>
+      <input type="number" id="stockInQty" placeholder="Jumlah masuk" required>
+      <button type="submit">Tambah Stok</button>
+    </form>
+  </section>
+
+  <!-- Form barang keluar -->
+  <section>
+    <h2>Barang Keluar</h2>
+    <form id="stockOutForm">
+      <input type="number" id="stockOutId" placeholder="ID barang" required>
+      <input type="number" id="stockOutQty" placeholder="Jumlah keluar" required>
+      <button type="submit">Kurangi Stok</button>
+    </form>
+  </section>
+
+  <!-- Tabel stok -->
+  <section>
+    <h2>Daftar Stok</h2>
+    <table border="1" id="inventoryTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nama Barang</th>
+          <th>Stok</th>
+          <th>Harga</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data akan diisi lewat JS -->
+      </tbody>
+    </table>
+  </section>
+
+  <script>
+    async function loadInventory() {
+      const res = await fetch('/api/inventory');
+      const items = await res.json();
+      const tbody = document.querySelector('#inventoryTable tbody');
+      tbody.innerHTML = '';
+      items.forEach(item => {
+        const row = `<tr>
+          <td>${item.id}</td>
+          <td>${item.name}</td>
+          <td>${item.stock}</td>
+          <td>${item.price}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    document.getElementById('addItemForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = document.getElementById('itemName').value;
+      const stock = document.getElementById('itemStock').value;
+      const price = document.getElementById('itemPrice').value;
+      await fetch('/api/inventory/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, stock, price })
+      });
+      loadInventory();
+    });
+
+    document.getElementById('stockInForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const id = document.getElementById('stockInId').value;
+      const qty = document.getElementById('stockInQty').value;
+      await fetch('/api/inventory/in', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, qty })
+      });
+      loadInventory();
+    });
+
+    document.getElementById('stockOutForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const id = document.getElementById('stockOutId').value;
+      const qty = document.getElementById('stockOutQty').value;
+      await fetch('/api/inventory/out', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, qty })
+      });
+      loadInventory();
+    });
+
+    // Load data awal
+    loadInventory();
+  </script>
+</body>
+</html>

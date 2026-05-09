@@ -1,0 +1,93 @@
+/* Reset dasar */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+/* Heading */
+h1, h2 {
+  margin-bottom: 0.5rem;
+}
+
+/* Section */
+section {
+  margin-bottom: 1.5rem;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Form */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+form input, form button {
+  padding: 0.6rem;
+  font-size: 1rem;
+}
+
+form button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #0056b3;
+}
+
+/* Tabel */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+table th, table td {
+  padding: 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+table th {
+  background-color: #f0f0f0;
+}
+
+/* Responsif */
+@media (min-width: 768px) {
+  body {
+    padding: 2rem;
+  }
+
+  section {
+    margin-bottom: 2rem;
+  }
+
+  form {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  form input {
+    flex: 1;
+  }
+
+  form button {
+    flex: 0 0 auto;
+    margin-left: 0.5rem;
+  }
+}

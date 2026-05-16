@@ -4,95 +4,425 @@
   <meta charset="UTF-8">
   <title>Kasir POS</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Load Eruda -->
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>
+    eruda.init(); // aktifkan panel debug
+  </script>
 </head>
 <body>
+
   <h1>Transaksi Kasir</h1>
 
-  <!-- Form transaksi -->
+  <!-- Form tambah item -->
   <section>
+
     <h2>Tambah Transaksi</h2>
+
     <form id="transactionForm">
-      <label for="itemId">ID Barang:</label>
-      <input type="number" id="itemId" required>
 
-      <label for="qty">Jumlah:</label>
-      <input type="number" id="qty" required>
+      <label for="itemId">
+        ID Barang:
+      </label>
 
-      <button type="submit">Tambah ke Keranjang</button>
+      <input
+        type="number"
+        id="itemId"
+        required
+      >
+
+      <label for="qty">
+        Jumlah:
+      </label>
+
+      <input
+        type="number"
+        id="qty"
+        required
+      >
+
+      <button type="submit">
+        Tambah ke Keranjang
+      </button>
+
     </form>
+
   </section>
 
   <!-- Keranjang -->
   <section>
+
     <h2>Keranjang</h2>
+
     <table border="1" id="cartTable">
+
       <thead>
+
         <tr>
           <th>ID Barang</th>
           <th>Nama Barang</th>
           <th>Jumlah</th>
+          <th>Harga</th>
           <th>Subtotal</th>
         </tr>
+
       </thead>
-      <tbody>
-        <!-- Data keranjang -->
-      </tbody>
+
+      <tbody></tbody>
+
     </table>
-    <p><strong>Total:</strong> <span id="totalAmount">0</span></p>
-    <button id="checkoutBtn">Checkout</button>
+
+    <p>
+      <strong>Total:</strong>
+      <span id="totalAmount">0</span>
+    </p>
+
+  </section>
+
+  <!-- Checkout -->
+  <section>
+
+    <h2>Checkout</h2>
+
+    <label>
+      Nama Kasir:
+    </label>
+
+    <input
+      type="text"
+      id="cashierName"
+      value="Agun"
+    >
+
+    <label>
+      Metode Pembayaran:
+    </label>
+
+    <select id="paymentMethod">
+
+      <option value="cash">
+        Cash
+      </option>
+
+      <option value="qris">
+        QRIS
+      </option>
+
+      <option value="debit">
+        Debit
+      </option>
+
+    </select>
+
+    <label>
+      Jumlah Dibayar:
+    </label>
+
+    <input
+      type="number"
+      id="paidAmount"
+      value="0"
+    >
+
+    <p>
+      <strong>Kembalian:</strong>
+      <span id="changeAmount">0</span>
+    </p>
+
+    <button id="checkoutBtn">
+      Checkout
+    </button>
+
   </section>
 
 <script>
+
   let cart = [];
 
   async function getItem(id) {
-    const res = await fetch('/api/inventory');
-    const items = await res.json();
-    return items.find(item => item.id == id);
+
+    const res =
+      await fetch('/api/inventory');
+
+    const items =
+      await res.json();
+
+    return items.find(
+      item => item.id == id
+    );
+
+  }
+
+  function calculateTotal() {
+
+    return cart.reduce(
+      (sum, item) => {
+
+        return sum +
+          (item.qty * item.price);
+
+      },
+      0
+    );
+
   }
 
   function renderCart() {
-    const tbody = document.querySelector('#cartTable tbody');
+
+    const tbody =
+      document.querySelector(
+        '#cartTable tbody'
+      );
+
     tbody.innerHTML = '';
+
     let total = 0;
+
     cart.forEach(c => {
-      const subtotal = c.qty * c.price;
+
+      const subtotal =
+        c.qty * c.price;
+
       total += subtotal;
-      tbody.innerHTML += `<tr>
-        <td>${c.id}</td>
-        <td>${c.name}</td>
-        <td>${c.qty}</td>
-        <td>${subtotal}</td>
-      </tr>`;
+
+      tbody.innerHTML += `
+        <tr>
+
+          <td>${c.id}</td>
+
+          <td>${c.name}</td>
+
+          <td>${c.qty}</td>
+
+          <td>${c.price}</td>
+
+          <td>${subtotal}</td>
+
+        </tr>
+      `;
+
     });
-    document.getElementById('totalAmount').textContent = total;
+
+    document.getElementById(
+      'totalAmount'
+    ).textContent = total;
+
+    updateChange();
+
   }
 
-  document.getElementById('transactionForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    const id = document.getElementById('itemId').value;
-    const qty = parseInt(document.getElementById('qty').value);
-    const item = await getItem(id);
-    if (!item) {
-      alert('Barang tidak ditemukan');
-      return;
-    }
-    cart.push({ id: item.id, name: item.name, qty, price: item.price });
-    renderCart();
-  });
+  function updateChange() {
 
-  document.getElementById('checkoutBtn').addEventListener('click', async () => {
-    const res = await fetch('/api/transactions/add', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cart })
-    });
-    const result = await res.json();
-    alert(result.message || 'Transaksi berhasil');
-    cart = [];
-    renderCart();
-  });
+    const total =
+      calculateTotal();
+
+    const paid =
+      parseFloat(
+        document.getElementById(
+          'paidAmount'
+        ).value
+      ) || 0;
+
+    const change =
+      paid - total;
+
+    document.getElementById(
+      'changeAmount'
+    ).textContent = change;
+
+  }
+
+  document
+    .getElementById('paidAmount')
+    .addEventListener(
+      'input',
+      updateChange
+    );
+
+  document
+    .getElementById(
+      'transactionForm'
+    )
+    .addEventListener(
+      'submit',
+      async e => {
+
+        e.preventDefault();
+
+        const id =
+          document.getElementById(
+            'itemId'
+          ).value;
+
+        const qty =
+          parseInt(
+            document.getElementById(
+              'qty'
+            ).value
+          );
+
+        const item =
+          await getItem(id);
+
+        if (!item) {
+
+          alert(
+            'Barang tidak ditemukan'
+          );
+
+          return;
+
+        }
+
+        cart.push({
+
+          id: item.id,
+
+          barcode:
+            item.barcode || null,
+
+          name: item.name,
+
+          qty,
+
+          price:
+            parseFloat(item.price),
+
+          discount: 0,
+
+          tax: 0
+
+        });
+
+        renderCart();
+
+      }
+    );
+
+  document
+    .getElementById('checkoutBtn')
+    .addEventListener(
+      'click',
+      async () => {
+
+        if (cart.length === 0) {
+
+          alert(
+            'Keranjang kosong'
+          );
+
+          return;
+
+        }
+
+        const total =
+          calculateTotal();
+
+        const cashier_name =
+          document.getElementById(
+            'cashierName'
+          ).value;
+
+        const payment_method =
+          document.getElementById(
+            'paymentMethod'
+          ).value;
+
+        const paid_amount =
+          parseFloat(
+            document.getElementById(
+              'paidAmount'
+            ).value
+          );
+
+        if (paid_amount < total) {
+
+          alert(
+            'Pembayaran kurang'
+          );
+
+          return;
+
+        }
+
+        const change_amount =
+          paid_amount - total;
+
+        const payload = {
+
+          cashier_name,
+
+          payment_method,
+
+          total,
+
+          paid_amount,
+
+          change_amount,
+
+          status: 'paid',
+
+          cart
+
+        };
+
+        console.log(payload);
+
+        const res =
+          await fetch(
+            '/api/transactions/add',
+            {
+
+              method: 'POST',
+
+              headers: {
+                'Content-Type':
+                  'application/json'
+              },
+
+              body:
+                JSON.stringify(
+                  payload
+                )
+
+            }
+          );
+
+        const result =
+          await res.json();
+
+        console.log(result);
+
+        if (!res.ok) {
+
+          alert(
+            result.error ||
+            'Checkout gagal'
+          );
+
+          return;
+
+        }
+
+        alert(
+          result.message ||
+          'Checkout berhasil'
+        );
+
+        cart = [];
+
+        renderCart();
+
+        document.getElementById(
+          'paidAmount'
+        ).value = 0;
+
+        updateChange();
+
+      }
+    );
+
 </script>
-  
+
 </body>
 </html>

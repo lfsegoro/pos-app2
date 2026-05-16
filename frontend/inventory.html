@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <title>Inventory Management</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Load Eruda -->
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>
+    eruda.init(); // aktifkan panel debug
+  </script>
 </head>
 <body>
   <h1>Inventory Management</h1>
@@ -79,11 +84,21 @@
       const name = document.getElementById('itemName').value;
       const stock = document.getElementById('itemStock').value;
       const price = document.getElementById('itemPrice').value;
-      await fetch('/api/inventory/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, stock, price })
-      });
+      const res = await fetch('/api/inventory/add', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name,
+    stock,
+    price
+  })
+});
+
+const result = await res.json();
+
+console.log(result);
       loadInventory();
     });
 

@@ -18,6 +18,11 @@
     rel="stylesheet"
     href="style.css"
   >
+  <!-- Load Eruda -->
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>
+    eruda.init(); // aktifkan panel debug
+  </script>
 
 </head>
 
@@ -31,16 +36,50 @@
 
   </header>
 
-  <!-- VIEW ITEM -->
+  <!-- VIEW Manual Price-->
+<section
+  id="view-price"
+  class="view hidden"
+>
+
+  <h2>
+    Input Harga Manual
+  </h2>
+
+  <input
+  type="text"
+    id="priceInput"
+    class="display"
+    readonly
+  >
+
+  <div
+    id="priceKeypad"
+    class="keypad"
+  ></div>
+
+</section>
+  <!-- VIEW item ID-->
 
   <section
+
     id="view-item"
     class="view"
   >
 
-    <h2>
-      Input Kode Barang
-    </h2>
+  <div class="view-header">
+
+  <h2>
+    Input Kode Barang
+  </h2>
+
+  <button id="noIdBtn">
+
+    w/o ID
+
+  </button>
+
+</div>
 
     <input
       type="text"
@@ -92,16 +131,17 @@
     <table>
 
       <thead>
+<tr>
 
-        <tr>
+  <th>ID</th>
 
-          <th>Item</th>
+  <th>Item</th>
 
-          <th>Qty</th>
+  <th>Qty</th>
 
-          <th>Subtotal</th>
+  <th>Subtotal</th>
 
-        </tr>
+</tr>
 
       </thead>
 
@@ -125,7 +165,49 @@
     </button>
 
   </section>
+<!-- EDIT QTY MODAL -->
 
+<div
+  id="qtyModal"
+  class="modal hidden"
+>
+
+  <div class="modal-content">
+
+    <h3>
+      Edit Quantity
+    </h3>
+
+    <input
+      type="number"
+      id="modalQtyInput"
+    >
+
+    <div class="modal-actions">
+
+      <button id="saveQtyBtn">
+
+        Save
+
+      </button>
+
+      <button id="deleteQtyBtn">
+
+        Delete
+
+      </button>
+
+      <button id="cancelQtyBtn">
+
+        Cancel
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
   <script
     type="module"
     src="app.js"

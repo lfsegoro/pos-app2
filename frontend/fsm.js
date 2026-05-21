@@ -4,15 +4,39 @@ export const fsm = {
 
   transitions: {
 
+    // =================
+    // INPUT ITEM NORMAL
+    // =================
+
     inputItem: {
 
-      NEXT: 'inputQty'
+      NEXT: 'inputQty',
+
+      NO_ID: 'inputPrice'
 
     },
 
+    // =================
+    // INPUT HARGA MANUAL
+    // =================
+
+    inputPrice: {
+
+      NEXT: 'inputQty',
+
+      CANCEL: 'inputItem'
+
+    },
+
+    // =================
+    // INPUT QUANTITY
+    // =================
+
     inputQty: {
 
-      ADD: 'inputItem'
+      ADD: 'inputItem',
+
+      CANCEL: 'inputItem'
 
     }
 
